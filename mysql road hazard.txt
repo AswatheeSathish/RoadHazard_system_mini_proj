@@ -1,0 +1,108 @@
+CREATE road_hazard_db;
+USE road_hazard_db;
+-- TABLE 1: roads
+CREATE TABLE roads (
+    road_id INT PRIMARY KEY AUTO_INCREMENT,
+    road_name VARCHAR(100) NOT NULL
+);
+-- TABLE 2: hazards 
+CREATE TABLE hazards (
+    hazard_id INT PRIMARY KEY AUTO_INCREMENT,
+    road_id INT,
+    hazard_type VARCHAR(50),
+    FOREIGN KEY (road_id) REFERENCES roads(road_id) ON DELETE CASCADE
+);
+-- TABLE 3: severity
+CREATE TABLE severity (
+    severity_id INT PRIMARY KEY AUTO_INCREMENT,
+    road_id INT,
+    severity VARCHAR(20),
+    FOREIGN KEY (road_id) REFERENCES roads(road_id) ON DELETE CASCADE
+);
+-- roads 
+INSERT INTO roads (road_name) VALUES
+('Kanakapura Road'),          -- 1
+('Sarjapur Road'),            -- 2
+('Mysore Road'),              -- 3
+('Old Madras Road'),          -- 4
+('Bellary Road'),             -- 5
+('Hosur Road'),               -- 6
+('Bannerghatta Road'),        -- 7
+('Tumkur Road'),              -- 8
+('Outer Ring Road'),          -- 9
+('MG Road'),                  -- 10
+('Residency Road'),           -- 11
+('Airport Road'),             -- 12
+('Whitefield Main Road'),     -- 13
+('Hebbal Service Road'),      -- 14
+('Richmond Road'),            -- 15
+('NICE Road'),                -- 16
+('Hennur Main Road'),         -- 17
+('Jayanagar 4th Block Road'), -- 18
+('KR Puram Bridge Road'),     -- 19
+('Electronic City Flyover'),  -- 20
+('Church Street'),            -- 21
+('Cunningham Road');          -- 22
+-- hazards 
+INSERT INTO hazards (road_id, hazard_type) VALUES
+(1, 'Pothole'),
+(1, 'Waterlogging'),
+(2, 'Accident Prone Zone'),
+(2, 'Pothole'),
+(3, 'Broken Streetlight'),
+(3, 'Stray Cattle'),
+(4, 'Loose Gravel'),
+(5, 'Fallen Tree'),
+(6, 'Accident Prone Zone'),
+(6, 'Broken Streetlight'),
+(7, 'Pothole'),
+(7, 'Waterlogging'),
+(8, 'Heavy Truck Traffic'),
+(8, 'Pothole'),
+(9, 'Waterlogging'),
+(9, 'Missing Signboard'),
+(11, 'Open Manhole'),
+(13, 'Pothole'),
+(13, 'Broken Signal'),
+(14, 'Oil Spill'),
+(15, 'Narrow Lane'),
+(15, 'Illegal Parking');
+-- severity 
+INSERT INTO severity (road_id, severity) VALUES
+(1,  'High'),
+(2,  'High'),
+(3,  'Medium'),
+(4,  'Low'),
+(5,  'Medium'),
+(6,  'High'),
+(7,  'High'),
+(8,  'Medium'),
+(9,  'High'),
+(10, NULL),
+(11, 'High'),
+(12, NULL),
+(13, 'Medium'),
+(14, 'High'),
+(15, 'Low');
+-- Tables output
+SELECT * FROM roads;
+SELECT * FROM hazards;
+SELECT * FROM severity;
+-- Join of ALL THREE tables
+SELECT r.road_id,
+       r.road_name,
+       h.hazard_type,
+       s.severity
+FROM roads r
+LEFT JOIN hazards  h ON r.road_id = h.road_id
+LEFT JOIN severity s ON r.road_id = s.road_id
+ORDER BY r.road_id, h.hazard_id;
+-- Summary: one row per road
+SELECT r.road_name,
+       COUNT(DISTINCT h.hazard_id) AS total_hazards,
+       MAX(s.severity)             AS road_severity
+FROM roads r
+LEFT JOIN hazards  h ON r.road_id = h.road_id
+LEFT JOIN severity s ON r.road_id = s.road_id
+GROUP BY r.road_id, r.road_name
+ORDER BY r.road_id;
